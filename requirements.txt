@@ -8,7 +8,7 @@ librosa
 audioread
 soundfile
 ffmpeg-python
-pann-inference
+git+https://github.com/qiuqiangkong/pann_inference
 
 # Explainable AI (XAI)
 shap
@@ -23,7 +23,7 @@ pyyaml
 tqdm
 h5py
 
-# Web Framework (for your final UI/Dashboard)
+# Web Framework
 streamlit
 fastapi
 uvicorn
