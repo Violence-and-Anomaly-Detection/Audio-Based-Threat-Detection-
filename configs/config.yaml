@@ -1,25 +1,28 @@
-# Project Settings
+# Master Project Config
 project_name: "Audio-Based-Threat-Detection"
-version: "1.0.0"
 
-# Audio Hyperparameters (Global for research consistency)
+# Audio Settings (Optimized for PANNs)
 audio:
   sample_rate: 32000
-  window_size: 1024
-  hop_size: 320
-  mel_bins: 64
-  fmin: 50
-  fmax: 14000
+  n_fft: 1024
+  hop_length: 320
+  n_mels: 64
+  top_db: 80
 
-# Training Parameters
-training:
-  batch_size: 32
-  learning_rate: 0.001
-  epochs: 50
-  
-# --- PATHS (Colab Ready) ---
+# --- DATASET PATHS (COLAB READY) ---
 paths:
-  # This path will be set automatically in Colab by your kagglehub code
-  vsd_dataset: "/root/.cache/kagglehub/datasets/fangfangz/audio-based-violence-detection-dataset/versions/3"
-  models_dir: "/content/drive/MyDrive/Research_Project/models"
+  # Path from your Morning KaggleHub download
+  vsd_root: "/root/.cache/kagglehub/datasets/fangfangz/audio-based-violence-detection-dataset/versions/3"
+  vsd_excel: "/root/.cache/kagglehub/datasets/fangfangz/audio-based-violence-detection-dataset/versions/3/VSD.xlsx"
+  vsd_audio_dir: "/root/.cache/kagglehub/datasets/fangfangz/audio-based-violence-detection-dataset/versions/3/audios_VSD/audios_VSD"
+  
+  # Persistent storage in Google Drive
+  drive_project_root: "/content/drive/MyDrive/Research_Project"
+  checkpoint_dir: "/content/drive/MyDrive/Research_Project/checkpoints"
   logs_dir: "/content/drive/MyDrive/Research_Project/logs"
+
+# Training Hyperparameters
+training:
+  batch_size: 16
+  learning_rate: 0.0001
+  epochs: 50

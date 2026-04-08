@@ -1,28 +1,27 @@
 import torch
 import torch.nn as nn
-import torch.nn.functional as F
 from pann_inference import AudioTagging
 
-class AdvancedThreatModel(nn.Module):
+class AudioThreatDetectionModel(nn.Module):
     """
-    Module 2: Multimodal Violence Detection
-    Backbone: PANNs (CNN14)
-    Temporal: Transformer Encoder
+    Proposed Architecture:
+    1. Pretrained PANNs (CNN14) Feature Extractor
+    2. Temporal Transformer Encoder
+    3. Classification Head (Violence vs. Normal)
     """
-    def __init__(self, num_classes=1, pretrained=True):
-        super(AdvancedThreatModel, self).__init__()
+    def __init__(self, num_classes=1, device='cpu'):
+        super(AudioThreatDetectionModel, self).__init__()
         
-        # Load PANNs (Pretrained Audio Neural Network)
-        # We use CNN14 as the backbone for high-accuracy feature extraction
-        self.backbone = AudioTagging(checkpoint_path=None, device='cuda' if torch.cuda.is_available() else 'cpu')
+        # 1. PANNs Backbone
+        # We don't need to load weights manually; pann_inference handles it
+        self.backbone = AudioTagging(checkpoint_path=None, device=device)
         
-        # Transformer Layer for Temporal Sequence Modeling
-        # This handles the "Temporal Models" part of your project title
-        encoder_layer = nn.TransformerEncoderLayer(d_model=2048, nhead=8, batch_first=True)
-        self.transformer = nn.TransformerEncoder(encoder_layer, num_layers=2)
+        # 2. Transformer for Temporal Context (Sequence analysis)
+        encoder_layers = nn.TransformerEncoderLayer(d_model=2048, nhead=8, batch_first=True)
+        self.transformer = nn.TransformerEncoder(encoder_layers, num_layers=2)
         
-        # Binary Classifier Head
-        self.fc = nn.Sequential(
+        # 3. Final Head
+        self.classifier = nn.Sequential(
             nn.Linear(2048, 512),
             nn.ReLU(),
             nn.Dropout(0.4),
@@ -30,33 +29,17 @@ class AdvancedThreatModel(nn.Module):
         )
 
     def forward(self, x):
-        # 1. Extract intermediate features from PANNs
-        # PANNs returns features of size [Batch, 2048] for each audio segment
+        # x shape: [Batch, Samples]
         with torch.no_grad():
-            features = self.backbone.get_intermediate_features(x)
+            # Get 2048-dim features from PANNs
+            features = self.backbone.get_intermediate_features(x) 
+            
+        # Reshape for transformer: [Batch, SeqLen=1, Dim=2048]
+        features = features.unsqueeze(1)
         
-        # 2. Add Temporal Context via Transformer
-        # (Assuming segments are treated as a sequence)
-        x = self.transformer(features.unsqueeze(1)) # Adding temporal dimension
+        # Temporal analysis
+        x = self.transformer(features)
         
-        # 3. Global Decision
+        # Final prediction
         x = x.mean(dim=1)
-        return self.fc(x)
-
-class SimpleBaselineCNN(nn.Module):
-    """
-    A simpler version of your morning model if you want a fast baseline.
-    """
-    def __init__(self, num_classes=1):
-        super(SimpleBaselineCNN, self).__init__()
-        self.conv = nn.Sequential(
-            nn.Conv2d(1, 16, 3, padding=1), nn.ReLU(), nn.MaxPool2d(2),
-            nn.Conv2d(16, 32, 3, padding=1), nn.ReLU(), nn.MaxPool2d(2),
-            nn.Conv2d(32, 64, 3, padding=1), nn.ReLU(), nn.AdaptiveAvgPool2d((1, 1))
-        )
-        self.fc = nn.Linear(64, num_classes)
-
-    def forward(self, x):
-        x = self.conv(x)
-        x = torch.flatten(x, 1)
-        return self.fc(x)
+        return self.classifier(x)
