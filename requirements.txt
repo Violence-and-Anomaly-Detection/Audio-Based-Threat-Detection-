@@ -1,0 +1,29 @@
+# Core Deep Learning
+torch
+torchaudio
+torchvision
+
+# Audio Processing
+librosa
+audioread
+soundfile
+ffmpeg-python
+pann-inference
+
+# Explainable AI (XAI)
+shap
+lime
+
+# Data & Utilities
+numpy
+pandas
+matplotlib
+seaborn
+pyyaml
+tqdm
+h5py
+
+# Web Framework (for your final UI/Dashboard)
+streamlit
+fastapi
+uvicorn
