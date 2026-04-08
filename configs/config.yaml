@@ -1,0 +1,40 @@
+# Project Settings
+project_name: "Audio-Based-Threat-Detection"
+version: "1.0.0"
+
+# Environment Switch: "local" or "colab"
+environment: "colab"
+
+# Paths Configuration
+paths:
+  # Paths for Google Colab
+  colab:
+    data_dir: "/content/drive/MyDrive/Research_Project/data"
+    raw_audio_dir: "/content/drive/MyDrive/Research_Project/data/raw"
+    processed_dir: "/content/drive/MyDrive/Research_Project/data/processed"
+    models_dir: "/content/drive/MyDrive/Research_Project/models"
+    logs_dir: "/content/drive/MyDrive/Research_Project/logs"
+  
+  # Paths for Local (if you ever use it)
+  local:
+    data_dir: "./data"
+    raw_audio_dir: "./data/raw"
+    processed_dir: "./data/processed"
+    models_dir: "./models"
+    logs_dir: "./logs"
+
+# Audio Hyperparameters
+audio:
+  sample_rate: 32000 # Recommended for PANNs
+  window_size: 1024
+  hop_size: 320
+  mel_bins: 64
+  fmin: 50
+  fmax: 14000
+
+# Training Parameters
+training:
+  batch_size: 32
+  learning_rate: 0.001
+  epochs: 50
+  patience: 10
