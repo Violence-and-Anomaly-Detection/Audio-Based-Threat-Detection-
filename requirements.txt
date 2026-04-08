@@ -1,28 +1,29 @@
-# Core Deep Learning
+# Deep Learning
 torch
 torchaudio
 torchvision
 
-# Audio Processing
+# Audio Feature Extraction
 librosa
-audioread
 soundfile
-ffmpeg-python
+audioread
 pann-inference
+ffmpeg-python
+
 # Explainable AI (XAI)
 shap
 lime
 
-# Data & Utilities
+# Utilities
 numpy
 pandas
 matplotlib
-seaborn
 pyyaml
 tqdm
 h5py
+openpyxl
 
-# Web Framework
+# UI
 streamlit
 fastapi
 uvicorn
