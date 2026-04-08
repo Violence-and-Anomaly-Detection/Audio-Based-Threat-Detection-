@@ -8,8 +8,7 @@ librosa
 audioread
 soundfile
 ffmpeg-python
-git+https://github.com/qiuqiangkong/pann_inference
-
+pann-inference
 # Explainable AI (XAI)
 shap
 lime
