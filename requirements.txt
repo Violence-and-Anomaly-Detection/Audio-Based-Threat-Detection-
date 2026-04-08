@@ -1,29 +1,18 @@
-# Deep Learning
-torch
+torch>=2.0.0
 torchaudio
-torchvision
-
-# Audio Feature Extraction
 librosa
-soundfile
-audioread
-pann-inference
-ffmpeg-python
-
-# Explainable AI (XAI)
-shap
-lime
-
-# Utilities
 numpy
 pandas
-matplotlib
 pyyaml
+scipy
+scikit-learn
+matplotlib
 tqdm
-h5py
-openpyxl
-
-# UI
-streamlit
-fastapi
-uvicorn
+pysoundfile
+audiomentations
+wandb
+tensorboard
+shap
+lime
+scikit-fuzzy
+ffmpeg-python
