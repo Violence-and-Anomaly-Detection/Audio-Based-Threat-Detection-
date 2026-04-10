@@ -8,10 +8,9 @@ from pathlib import Path
 class ViolenceAudioDataset(Dataset):
     """
     Custom PyTorch Dataset for loading Audio files and their labels.
-    Assumes a CSV file exists mapping `filename` to `label` (e.g. 0=normal, 1=fighting, 2=shooting)
+    Automatically labels files based on filenames (e.g. 'noviolence' -> 0, anything else like 'angry' -> 1).
     """
-    def __init__(self, annotations_file_path: str, audio_dir: str, target_sample_rate: int = 32000, max_length_seconds: int = 5):
-        self.audio_labels = pd.read_csv(annotations_file_path)
+    def __init__(self, audio_dir: str, target_sample_rate: int = 32000, max_length_seconds: int = 5):
         self.audio_dir = Path(audio_dir)
         self.target_sample_rate = target_sample_rate
         self.max_length_seconds = max_length_seconds
@@ -20,13 +19,23 @@ class ViolenceAudioDataset(Dataset):
         # e.g. 5 seconds * 32,000 samples/sec = 160,000 samples.
         self.num_samples = self.target_sample_rate * self.max_length_seconds
         
+        # Automatically gather all .wav files in the directory (and subdirectories)
+        self.audio_files = list(self.audio_dir.rglob("*.wav"))
+        
     def __len__(self):
-        return len(self.audio_labels)
+        return len(self.audio_files)
 
     def __getitem__(self, index):
-        # 1. Get audio path and label
-        audio_path = self.audio_dir / self.audio_labels.iloc[index, 0]
-        label = self.audio_labels.iloc[index, 1]
+        # 1. Get audio path
+        audio_path = self.audio_files[index]
+        
+        # Automatically assign label based on the filename
+        filename = audio_path.name.lower()
+        if "noviolence" in filename:
+            label = 0
+        else:
+            label = 1
+
         
         # 2. Load the audio file using torchaudio
         try:
@@ -58,13 +67,13 @@ class ViolenceAudioDataset(Dataset):
             
         return signal, torch.tensor(label, dtype=torch.long)
 
-def get_dataloader(csv_path: str, audio_dir: str, batch_size: int = 16, shuffle: bool = True):
+def get_dataloader(audio_dir: str, batch_size: int = 16, shuffle: bool = True):
     """
     Utility function to initialize and return a PyTorch DataLoader.
     """
-    dataset = ViolenceAudioDataset(annotations_file_path=csv_path, audio_dir=audio_dir)
+    dataset = ViolenceAudioDataset(audio_dir=audio_dir)
     return DataLoader(dataset, batch_size=batch_size, shuffle=shuffle, num_workers=0) # Set num_workers>0 when not testing locally
 
 if __name__ == "__main__":
     print("Dataset module ready.")
-    print("Expected CSV format: [filename.wav, class_id]")
+    print("Automatically assigns labels: 0 for non-violence, 1 for violence (based on filename).")
