@@ -1,13 +1,15 @@
 import torch
+import torch.nn as nn
 import torchaudio
 import matplotlib.pyplot as plt
 
-class LogMelSpectrogramFeatureExtractor:
+class LogMelSpectrogramFeatureExtractor(nn.Module):
     """
     Transforms 1D audio waveforms into 2D Log-Mel Spectrograms.
     Parameters are optimized specifically for the PANNs (CNN14) backbone.
     """
     def __init__(self, sample_rate=32000, n_fft=1024, hop_length=320, n_mels=64):
+        super(LogMelSpectrogramFeatureExtractor, self).__init__()
         self.sample_rate = sample_rate
         
         # 1. MelSpectrogram transformation
@@ -23,7 +25,7 @@ class LogMelSpectrogramFeatureExtractor:
         # 2. Amplitude to dB conversion (Log scale)
         self.amplitude_to_db = torchaudio.transforms.AmplitudeToDB(stype='power', top_db=80)
 
-    def __call__(self, waveform: torch.Tensor) -> torch.Tensor:
+    def forward(self, waveform: torch.Tensor) -> torch.Tensor:
         """
         Expects a waveform tensor of shape (channels, samples) or (batch, channels, samples)
         Returns a Log-Mel Spectrogram tensor.
